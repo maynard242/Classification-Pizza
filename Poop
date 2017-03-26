@@ -1,0 +1,261 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {
+    "collapsed": true,
+    "deletable": true,
+    "editable": true
+   },
+   "outputs": [],
+   "source": [
+    "## Import Libraries ##\n",
+    "\n",
+    "import json\n",
+    "from pprint import pprint\n",
+    "from pandas import *\n",
+    "from pandas.io.json import json_normalize\n",
+    "from sklearn.feature_extraction.text import *\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {
+    "collapsed": false,
+    "deletable": true,
+    "editable": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "'data in json format:'\n",
+      "{'giver_username_if_known': 'N/A',\n",
+      " 'number_of_downvotes_of_request_at_retrieval': 2,\n",
+      " 'number_of_upvotes_of_request_at_retrieval': 2,\n",
+      " 'post_was_edited': False,\n",
+      " 'request_id': 't3_yemx8',\n",
+      " 'request_number_of_comments_at_retrieval': 1,\n",
+      " 'request_text': 'My boyfriend and I live in Saint Augustine, Florida and have '\n",
+      "                 'been having a rough time financially the past few months.  '\n",
+      "                 \"In and out of various jobs, we've had to survive off of \"\n",
+      "                 'coscto sized ramen packs, and pasta and olive oil.  I '\n",
+      "                 'applied for food stamps a couple days ago, and am waiting to '\n",
+      "                 \"hear back from them.  It's getting a little trite, and we're \"\n",
+      "                 \"quite hungry tonight, a hot pizza would be a delight.  We'll \"\n",
+      "                 'happily pay it forward in the future.  Much love.',\n",
+      " 'request_text_edit_aware': 'My boyfriend and I live in Saint Augustine, '\n",
+      "                            'Florida and have been having a rough time '\n",
+      "                            'financially the past few months.  In and out of '\n",
+      "                            \"various jobs, we've had to survive off of coscto \"\n",
+      "                            'sized ramen packs, and pasta and olive oil.  I '\n",
+      "                            'applied for food stamps a couple days ago, and am '\n",
+      "                            \"waiting to hear back from them.  It's getting a \"\n",
+      "                            \"little trite, and we're quite hungry tonight, a \"\n",
+      "                            \"hot pizza would be a delight.  We'll happily pay \"\n",
+      "                            'it forward in the future.  Much love.',\n",
+      " 'request_title': '[Request]  Saint Augustine, US.  Boyfriend and I have no '\n",
+      "                  'money till next week, and are awaiting food stamps '\n",
+      "                  'approval.',\n",
+      " 'requester_account_age_in_days_at_request': 444.6098148148148,\n",
+      " 'requester_account_age_in_days_at_retrieval': 919.923113425926,\n",
+      " 'requester_days_since_first_post_on_raop_at_request': 0.0,\n",
+      " 'requester_days_since_first_post_on_raop_at_retrieval': 475.27163194444444,\n",
+      " 'requester_number_of_comments_at_request': 99,\n",
+      " 'requester_number_of_comments_at_retrieval': 182,\n",
+      " 'requester_number_of_comments_in_raop_at_request': 0,\n",
+      " 'requester_number_of_comments_in_raop_at_retrieval': 10,\n",
+      " 'requester_number_of_posts_at_request': 6,\n",
+      " 'requester_number_of_posts_at_retrieval': 16,\n",
+      " 'requester_number_of_posts_on_raop_at_request': 0,\n",
+      " 'requester_number_of_posts_on_raop_at_retrieval': 1,\n",
+      " 'requester_number_of_subreddits_at_request': 38,\n",
+      " 'requester_received_pizza': False,\n",
+      " 'requester_subreddits_at_request': ['AskReddit',\n",
+      "                                     'Guitar',\n",
+      "                                     'Jazz',\n",
+      "                                     'Music',\n",
+      "                                     'NSFW_GIF',\n",
+      "                                     'Psychonaut',\n",
+      "                                     'RoomPorn',\n",
+      "                                     'StAugustine',\n",
+      "                                     'TwoXChromosomes',\n",
+      "                                     'WTF',\n",
+      "                                     'YouShouldKnow',\n",
+      "                                     'atheism',\n",
+      "                                     'aww',\n",
+      "                                     'bakedart',\n",
+      "                                     'catpictures',\n",
+      "                                     'cats',\n",
+      "                                     'crochet',\n",
+      "                                     'dubstep',\n",
+      "                                     'ents',\n",
+      "                                     'entwives',\n",
+      "                                     'food',\n",
+      "                                     'funny',\n",
+      "                                     'gonewild',\n",
+      "                                     'hiphopheads',\n",
+      "                                     'listentothis',\n",
+      "                                     'meetup',\n",
+      "                                     'offbeat',\n",
+      "                                     'pics',\n",
+      "                                     'realpics',\n",
+      "                                     'self',\n",
+      "                                     'sex',\n",
+      "                                     'tattoos',\n",
+      "                                     'treecomics',\n",
+      "                                     'treemusic',\n",
+      "                                     'trees',\n",
+      "                                     'videos',\n",
+      "                                     'vinyl',\n",
+      "                                     'zombies'],\n",
+      " 'requester_upvotes_minus_downvotes_at_request': 278,\n",
+      " 'requester_upvotes_minus_downvotes_at_retrieval': 664,\n",
+      " 'requester_upvotes_plus_downvotes_at_request': 378,\n",
+      " 'requester_upvotes_plus_downvotes_at_retrieval': 942,\n",
+      " 'requester_user_flair': None,\n",
+      " 'requester_username': 'Faroffhighways',\n",
+      " 'unix_timestamp_of_request': 1345254263.0,\n",
+      " 'unix_timestamp_of_request_utc': 1345250663.0}\n",
+      "\n",
+      "Size of the normalized Data: (3040, 32)\n",
+      "\n",
+      "normalized data columns: ['giver_username_if_known', 'number_of_downvotes_of_request_at_retrieval', 'number_of_upvotes_of_request_at_retrieval', 'post_was_edited', 'request_id', 'request_number_of_comments_at_retrieval', 'request_text', 'request_text_edit_aware', 'request_title', 'requester_account_age_in_days_at_request', 'requester_account_age_in_days_at_retrieval', 'requester_days_since_first_post_on_raop_at_request', 'requester_days_since_first_post_on_raop_at_retrieval', 'requester_number_of_comments_at_request', 'requester_number_of_comments_at_retrieval', 'requester_number_of_comments_in_raop_at_request', 'requester_number_of_comments_in_raop_at_retrieval', 'requester_number_of_posts_at_request', 'requester_number_of_posts_at_retrieval', 'requester_number_of_posts_on_raop_at_request', 'requester_number_of_posts_on_raop_at_retrieval', 'requester_number_of_subreddits_at_request', 'requester_received_pizza', 'requester_subreddits_at_request', 'requester_upvotes_minus_downvotes_at_request', 'requester_upvotes_minus_downvotes_at_retrieval', 'requester_upvotes_plus_downvotes_at_request', 'requester_upvotes_plus_downvotes_at_retrieval', 'requester_user_flair', 'requester_username', 'unix_timestamp_of_request', 'unix_timestamp_of_request_utc']\n"
+     ]
+    }
+   ],
+   "source": [
+    "## Get Data ##\n",
+    "\n",
+    "#reference on data: https://www.kaggle.com/c/random-acts-of-pizza/data\n",
+    "# pull in the training and test data\n",
+    "with open('/Users/erikaananda/Documents/MIDS/W207/Final Project/data/train.json', encoding='utf-8') as data_file:\n",
+    "    trainData = json.loads(data_file.read())   \n",
+    "with open('/Users/erikaananda/Documents/MIDS/W207/Final Project/data/test.json', encoding='utf-8') as data_file:\n",
+    "    testData = json.loads(data_file.read())    \n",
+    "\n",
+    "# create a dev data set \n",
+    "devData = trainData[0:1000]\n",
+    "trainData = trainData[1000:]\n",
+    "\n",
+    "# show how the data looks in its original format\n",
+    "pprint(\"data in json format:\")\n",
+    "pprint(trainData[1])\n",
+    "\n",
+    "# create a normalized view\n",
+    "allData = json_normalize(trainData)\n",
+    "print(\"\\nSize of the normalized Data:\", allData.shape)\n",
+    "print(\"\\nnormalized data columns:\", list(allData))\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "metadata": {
+    "collapsed": false,
+    "deletable": true,
+    "editable": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['giver_username_if_known', 'number_of_downvotes_of_request_at_retrieval', 'number_of_upvotes_of_request_at_retrieval', 'post_was_edited', 'request_id', 'request_number_of_comments_at_retrieval', 'request_text', 'request_text_edit_aware', 'request_title', 'requester_account_age_in_days_at_request', 'requester_account_age_in_days_at_retrieval', 'requester_days_since_first_post_on_raop_at_request', 'requester_days_since_first_post_on_raop_at_retrieval', 'requester_number_of_comments_at_request', 'requester_number_of_comments_at_retrieval', 'requester_number_of_comments_in_raop_at_request', 'requester_number_of_comments_in_raop_at_retrieval', 'requester_number_of_posts_at_request', 'requester_number_of_posts_at_retrieval', 'requester_number_of_posts_on_raop_at_request', 'requester_number_of_posts_on_raop_at_retrieval', 'requester_number_of_subreddits_at_request', 'requester_received_pizza', 'requester_upvotes_minus_downvotes_at_request', 'requester_upvotes_minus_downvotes_at_retrieval', 'requester_upvotes_plus_downvotes_at_request', 'requester_upvotes_plus_downvotes_at_retrieval', 'requester_user_flair', 'requester_username', 'unix_timestamp_of_request', 'unix_timestamp_of_request_utc']\n",
+      "(3040, 1)\n",
+      "['AskReddit', 'Guitar', 'Jazz', 'Music', 'NSFW_GIF', 'Psychonaut', 'RoomPorn', 'StAugustine', 'TwoXChromosomes', 'WTF', 'YouShouldKnow', 'atheism', 'aww', 'bakedart', 'catpictures', 'cats', 'crochet', 'dubstep', 'ents', 'entwives', 'food', 'funny', 'gonewild', 'hiphopheads', 'listentothis', 'meetup', 'offbeat', 'pics', 'realpics', 'self', 'sex', 'tattoos', 'treecomics', 'treemusic', 'trees', 'videos', 'vinyl', 'zombies']\n",
+      "The size of the vocabulary for the training data is 6450\n",
+      "First 10 feature Names: ['1000words', '100movies365days', '100pushups', '100sets', '1558', '1780', '1911', '1920s', '1930s']\n"
+     ]
+    }
+   ],
+   "source": [
+    "## Create subsets of data for analysis ###\n",
+    "\n",
+    "# create a flat dataset without the subreddits list\n",
+    "flatData = allData.drop('requester_subreddits_at_request', 1)\n",
+    "# create a separate dataset with just subreddits, indexed on request id\n",
+    "# we can creata a count vector on the words, run Naive Bayes against it, \n",
+    "# and add the probabilities to our flat dataset\n",
+    "subredData = allData[['request_id','requester_subreddits_at_request']]\n",
+    "subredData.set_index('request_id', inplace=True)\n",
+    "# our training labels\n",
+    "trainLabel = allData['requester_received_pizza']\n",
+    "\n",
+    "# what do these look like?\n",
+    "print(list(flatData))\n",
+    "print(subredData.shape)\n",
+    "print(subredData['requester_subreddits_at_request'][1])\n",
+    "\n",
+    "# create a corpus of subreddits to vectorize\n",
+    "corpus = []\n",
+    "for index in range(len(subredData)):\n",
+    "    corpus.append(' '.join(subredData['requester_subreddits_at_request'][index]))\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 78,
+   "metadata": {
+    "collapsed": false,
+    "deletable": true,
+    "editable": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The size of the vocabulary for the training data is 6450\n",
+      "First 10 feature Names: ['1000words', '100movies365days', '100pushups', '100sets', '1558', '1780', '1911', '1920s', '1930s']\n"
+     ]
+    }
+   ],
+   "source": [
+    "## Analyze ##\n",
+    "\n",
+    "# create a train vector\n",
+    "vectorizer = CountVectorizer(min_df=1)\n",
+    "trainVector = vectorizer.fit_transform(corpus)\n",
+    "print (\"The size of the vocabulary for the training data is\", trainVector.shape[1])\n",
+    "print(\"First 10 feature Names:\", vectorizer.get_feature_names()[1:10])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true,
+    "deletable": true,
+    "editable": true
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "anaconda-cloud": {},
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.1"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}
