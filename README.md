@@ -1,2 +1,5 @@
-# W207_Proj
-Repo for W207 Pizza Project
+# Project to Predict which emails will result in free pizza
+
+Notebooks with code in main directory
+
+Data is in /data directory
